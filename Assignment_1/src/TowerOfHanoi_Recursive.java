@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class TowerOfHanoi_Recursive {
     static int i = 0;
     public static void TowerOfHanoi(int n, char from_tower, char to_tower, char extra_tower) {
@@ -13,7 +15,12 @@ public class TowerOfHanoi_Recursive {
     }
 
     public static void main(String[] args) {
-        int N = 3;
+        Scanner obj = new Scanner(System.in);
+        System.out.print("Give N: ");
+
+        int N = obj.nextInt();
         TowerOfHanoi(N, 'A', 'C', 'B');
+
+        obj.close();
     }
 }
