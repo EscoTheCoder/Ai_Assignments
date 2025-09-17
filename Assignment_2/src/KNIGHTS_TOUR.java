@@ -10,18 +10,18 @@ class KNIGHTS_TOUR {
         KNIGHTS_TOUR kt = new KNIGHTS_TOUR();
         kt.initialize();
 
-        int startX = 0;
-        int startY = 0;
+        int startX = 1;
+        int startY = 1;
 
-        board[startX][startY] = 1;
+        board[startX-1][startY-1] = 1;
 
         System.out.println("PART 1. Data");
         System.out.println(" 1) Board: " + N + "x" + N);
-        System.out.println(" 2) Initial position: X="+startX+", "+ "Y="+startY+". "+ "L="+1+"."+"\n");
+        System.out.println(" 2) Initial position: X="+(startX)+", "+ "Y="+(startY)+". "+ "L="+1+"."+"\n");
 
         System.out.println("PART 2. Trace");
 
-        boolean yes = kt.TRY(startX, startY, 2, 1);
+        boolean yes = kt.TRY(startX-1, startY-1, 2, 1);
 
         System.out.println("PART 3. Results");
         if (yes) {
@@ -47,8 +47,8 @@ class KNIGHTS_TOUR {
 
     public void initialize() {
         offsets = new int[][]{
-                {-2, 1}, {-1, 2}, {1, 2}, {2, 1},
-                {2, -1}, {1, -2}, {-1, -2}, {-2, -1}
+                {2, 1}, {1, 2}, {-1, 2}, {-2, 1},
+                {-2, -1}, {-1, -2}, {1, -2}, {2, -1}
         };
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
