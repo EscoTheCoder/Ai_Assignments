@@ -1,106 +1,136 @@
-class KNIGHTS_TOUR {
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Scanner;
 
-    public static int N = 5;
-    public int NN = N * N;
-    public static int[][] board = new int[N][N];
-    public static int[][] offsets;
-    public static long trials = 0;
+public class KNIGHTS_TOUR {
+    private static int N;
+    private static int[][] board;
+    private static final int[] moveX = {2, 1, -1, -2, -2, -1, 1, 2};
+    private static final int[] moveY = {1, 2, 2, 1, -1, -2, -2, -1};
+    private static int trials = 0;
+    private static StringBuilder traceLog = new StringBuilder();
+    private static StringBuilder shortLog = new StringBuilder();
+    private static boolean printOnScreen;
 
     public static void main(String[] args) {
-        KNIGHTS_TOUR kt = new KNIGHTS_TOUR();
-        kt.initialize();
+        Scanner scanner = new Scanner(System.in);
 
-        int startX = 1;
-        int startY = 1;
+        System.out.print("Enter board size (N x N): ");
+        N = scanner.nextInt();
+        board = new int[N][N];
 
-        board[startX-1][startY-1] = 1;
+        System.out.print("Enter starting X coordinate: ");
+        int startX = scanner.nextInt() - 1;
+        System.out.print("Enter starting Y coordinate: ");
+        int startY = scanner.nextInt() - 1;
 
-        System.out.println("PART 1. Data");
-        System.out.println(" 1) Board: " + N + "x" + N);
-        System.out.println(" 2) Initial position: X="+(startX)+", "+ "Y="+(startY)+". "+ "L="+1+"."+"\n");
+        System.out.print("Do you want to print the output on the screen? (yes/no): ");
+        printOnScreen = scanner.next().equalsIgnoreCase("yes");
 
-        System.out.println("PART 2. Trace");
+        for (int[] row : board) Arrays.fill(row, -1);
+        board[startX][startY] = 0;
 
-        boolean yes = kt.TRY(startX-1, startY-1, 2, 1);
+        String part1 = "PART 1. Data\n" +
+                "1) Board: " + N + "x" + N + "\n" +
+                "2) Initial position: X=" + (startX + 1) + ", Y=" + (startY + 1) + ", L="+1+"."+"\n";
+        traceLog.append(part1);
+        shortLog.append(part1);
+        traceLog.append("PART 2. Trace\n");
 
-        System.out.println("PART 3. Results");
-        if (yes) {
-            System.out.println(" 1) Path is found. Trials=" + trials + ".");
-            System.out.println(" 2) Path graphically:");
-            System.out.println("Y,V");
-            for (int y = N - 1; y >= 0; y--) {
-                System.out.printf("%2d | ", (y + 1));
-                for (int x = 0; x < N; x++) {
-                    System.out.printf("%2d ", board[x][y]);
-                }
-                System.out.println();
-            }
-            System.out.print("   ------------------X,U\n    ");
-            for (int x = 1; x <= N; x++) {
-                System.out.printf(" %2d", x);
-            }
-            System.out.println();
+        if (solveKnightTour(startX, startY, 1, 0)) {
+            String part3 = "\nPART 3. Results\n1) Path is found. Trials=" + trials + "\n";
+            traceLog.append(part3);
+            shortLog.append(part3);
+            printBoard();
         } else {
-            System.out.println("Path does not exist. Trials=" + trials + ".");
+            String part3 = "\nPART 3. Results\nNo tour. Trials=" + trials + "\n";
+            traceLog.append(part3);
+            shortLog.append(part3);
         }
+
+        writeToFile("out-short.txt", shortLog.toString());
+        writeToFile("out-long.txt", traceLog.toString());
+
+        if (printOnScreen) {
+            System.out.println(traceLog);
+        }
+        scanner.close();
     }
 
-    public void initialize() {
-        offsets = new int[][]{
-                {2, 1}, {1, 2}, {-1, 2}, {-2, 1},
-                {-2, -1}, {-1, -2}, {1, -2}, {2, -1}
-        };
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                board[i][j] = 0;
-            }
-        }
-    }
+    private static boolean solveKnightTour(int x, int y, int moveNum, int depth) {
+        if (moveNum == N * N) return true;
 
-    public boolean TRY(int X, int Y, int L, int depth) {
-        if (L > NN) {
-            return true; //all cells covered
-        }
+        for (int i = 0; i < 8; i++) {
+            int nextX = x + moveX[i];
+            int nextY = y + moveY[i];
 
-        int move = 0;
-        for (int[] offset : offsets) {
-            move++;
             trials++;
 
-            int U = X + offset[0];
-            int V = Y + offset[1];
+            String indent = "-".repeat(depth); //  indentation   depth
 
-            //prefix with - according to depth
-            String prefix = "-".repeat(depth - 1);
+            if (isValidMove(nextX, nextY)) {
+                board[nextX][nextY] = moveNum;
 
-            if (U >= 0 && U < N && V >= 0 && V < N) {
-                if (board[U][V] != 0) {
-                    //already visited
-                    System.out.printf(" %d) %sR%d. U=%d, V=%d. L=%d. Thread.%n",
-                            trials, prefix, move, U + 1, V + 1, L);
-                    continue;
-                }
+                traceLog.append(String.format("%7d) %s-R%d. U=%d, V=%d. L=%d. Free. BOARD[%d,%d]:=%d.\n",
+                        trials, indent, i + 1, nextX + 1, nextY + 1, moveNum + 1, nextX + 1, nextY + 1, moveNum + 1));
 
-                //free to move
-                System.out.printf(" %d) %sR%d. U=%d, V=%d. L=%d. Free. BOARD[%d,%d]:=%d.%n",
-                        trials, prefix, move, U + 1, V + 1, L, U + 1, V + 1, L);
+                if (solveKnightTour(nextX, nextY, moveNum + 1, depth + 1)) return true;
 
-                board[U][V] = L;
-
-                if (TRY(U, V, L + 1, depth + 1)) {
-                    return true;
-                } else {
-                    //backtrack
-                    board[U][V] = 0;
-                    System.out.print("Backtrack.\n");
-                }
-
+                board[nextX][nextY] = -1; // backtracking
+                traceLog.append(String.format("%7d) %sBacktrack from (%d, %d).\n", trials, indent, nextX + 1, nextY + 1));
             } else {
-                //ektos oriown
-                System.out.printf(" %d) %sR%d. U=%d, V=%d. L=%d. Out.%n",
-                        trials, prefix, move, U + 1, V + 1, L);
+                String status = (nextX < 0 || nextX >= N || nextY < 0 || nextY >= N) ? "Out." : "Thread.";
+
+                traceLog.append(String.format("%7d) %s-R%d. U=%d, V=%d. L=%d. %s\n",
+                        trials, indent, i + 1, nextX + 1, nextY + 1, moveNum + 1, status));
             }
         }
         return false;
+    }
+
+    private static boolean isValidMove(int x, int y) {
+        return (x >= 0 && x < N && y >= 0 && y < N && board[x][y] == -1);
+    }
+
+    private static void printBoard() {
+        traceLog.append("2) Path graphically:\n\n");
+        shortLog.append("2) Path graphically:\n\n");
+
+        traceLog.append("Y,V^\n");
+        shortLog.append("Y,V^\n");
+        for (int y = N - 1; y >= 0; y--) {
+            String cell_ = String.format("%2d | ", (y + 1));
+            traceLog.append(cell_);
+            shortLog.append(cell_);
+            for (int x = 0; x < N; x++) {
+                String cell = String.format("%3d ", board[x][y] + 1);
+                traceLog.append(cell);
+                shortLog.append(cell);
+            }
+
+            traceLog.append("\n");
+            shortLog.append("\n");
+        }
+        traceLog.append("   -----------------------> X,U\n    ");
+        shortLog.append("   -----------------------> X,U\n    ");
+
+        for (int x = 1; x <= N; x++) {
+            String cell = String.format(" %3d", x);
+            traceLog.append(cell);
+            shortLog.append(cell);
+        }
+
+        traceLog.append("\n");
+        shortLog.append("\n");
+
+    }
+
+    private static void writeToFile(String filename, String content) {
+        try (FileWriter writer = new FileWriter(filename)) {
+            writer.write(content);
+        } catch (IOException e) {
+            System.err.println("Error writing to file " + filename);
+        }
     }
 }
