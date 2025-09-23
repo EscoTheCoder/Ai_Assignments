@@ -79,8 +79,15 @@ public class TowerOfHanoiIterative {
 
     public static void main(String[] args) {
         Scanner obj = new Scanner(System.in);
+
         System.out.print("Give N: ");
         int N = obj.nextInt();
+        
+         if (N < 1 || N > 10) {
+            System.out.println("Invalid input. Please enter a number between 1 and 10.");
+            obj.close();
+            return;
+        }
         towerOfHanoi(N);
         obj.close();
     }

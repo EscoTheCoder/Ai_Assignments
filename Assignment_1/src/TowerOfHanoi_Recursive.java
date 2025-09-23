@@ -76,6 +76,12 @@ public class TowerOfHanoi_Recursive {
         System.out.print("Give N: ");
         int N = sc.nextInt();
 
+         if (N < 1 || N > 10) {
+            System.out.println("Invalid input. Please enter a number between 1 and 10.");
+            sc.close();
+            return;
+        }
+
         for (int i = N; i >= 1; i--) {
             A.push(i);
         }
