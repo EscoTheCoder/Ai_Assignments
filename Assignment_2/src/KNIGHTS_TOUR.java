@@ -13,7 +13,7 @@ public class KNIGHTS_TOUR {
 
     private static FileWriter longWriter; // stream για το long αρχείο
 
-    private static final int TRIAL_LIMIT_FOR_SCREEN = 500000; // πάνω από αυτό → όχι στο terminal
+    private static final int TRIAL_LIMIT_FOR_SCREEN = 250000; // πάνω από αυτό → όχι στο terminal
 
     public static void main(String[] args) {
         KNIGHTS_TOUR kt = new KNIGHTS_TOUR();
@@ -97,24 +97,24 @@ public class KNIGHTS_TOUR {
             int nextY = y + moveY[i];
             trials++;
 
-            String indent = "-".repeat(depth);
+            String indent = (depth == 0) ? "" : "-".repeat(depth);
 
             if (isValidMove(nextX, nextY)) {
                 board[nextX][nextY] = moveNum + 1;
 
-                longWriter.write(String.format("%7d) %s-R%d. U=%d, V=%d. L=%d. Free. BOARD[%d,%d]:=%d.\n",
-                        trials, indent, i + 1, nextX + 1, nextY + 1, moveNum + 1,
-                        nextX + 1, nextY + 1, moveNum + 1));
-
+                longWriter.write(String.format("%d) %sR%d. U=%d, V=%d. L=%d. Free. BOARD[%d,%d]:=%d.\n",
+                trials, indent, i + 1, nextX + 1, nextY + 1, moveNum + 1,
+                nextX + 1, nextY + 1, moveNum + 1));
                 if (solveKnightTour(nextX, nextY, moveNum + 1, depth + 1)) return true;
 
                 board[nextX][nextY] = -1;
-                longWriter.write(String.format("%7d) %s-R%d. U=%d, V=%d. L=%d. Backtrack.\n",
-                        trials, indent, i + 1, nextX + 1, nextY + 1, moveNum + 1));
-            } else {
+                longWriter.write(String.format("%d) %sR%d. U=%d, V=%d. L=%d. Backtrack.\n",
+                trials, indent, i + 1, nextX + 1, nextY + 1, moveNum + 1));
+            } 
+            else {
                 String status = (nextX < 0 || nextX >= N || nextY < 0 || nextY >= N) ? "Out." : "Thread.";
-                longWriter.write(String.format("%7d) %s-R%d. U=%d, V=%d. L=%d. %s\n",
-                        trials, indent, i + 1, nextX + 1, nextY + 1, moveNum + 1, status));
+                longWriter.write(String.format("%d) %sR%d. U=%d, V=%d. L=%d. %s\n",
+                trials, indent, i + 1, nextX + 1, nextY + 1, moveNum + 1, status));
             }
         }
         return false;
