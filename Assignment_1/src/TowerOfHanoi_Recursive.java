@@ -26,7 +26,12 @@ public class TowerOfHanoi_Recursive {
         tower_c.push(tower_a.pop());
 
         // Print step
-        System.out.print(i + ". Move disk " + disk + " from " + from + " to " + to + ".  ");
+        if(i>=10){
+            System.out.print(i + ". Move disk " + disk + " from " + from + " to " + to + ".  ");    
+        }
+        else{
+            System.out.print(i + ".  Move disk " + disk + " from " + from + " to " + to + ".  ");
+        }
         printState();
     }
 
